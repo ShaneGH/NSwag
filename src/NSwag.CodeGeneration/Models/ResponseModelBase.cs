@@ -62,9 +62,17 @@ namespace NSwag.CodeGeneration.Models
         public bool CheckChunkedStatusCode => IsFile && (StatusCode == "200" || StatusCode == "204");
 
         /// <summary>Gets the type of the response.</summary>
-        public string Type =>
-            _response.IsBinary(_operation) ? _generator.GetBinaryResponseTypeName() :
-            _generator.GetTypeName(ActualResponseSchema, IsNullable, "Response");
+        public string Type
+        {
+            get
+            {
+                if (_response.IsBinary(_operation))
+                    return _generator.GetBinaryResponseTypeName();
+                        
+                var hint = ActualResponseSchema.HasTypeNameTitle ? "Response" : null;
+                return _generator.GetTypeName(ActualResponseSchema, IsNullable, hint);
+            }
+        }
 
         /// <summary>Gets a value indicating whether the response has a type (i.e. not void).</summary>
         public bool HasType => ActualResponseSchema != null;
